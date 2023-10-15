@@ -1,58 +1,35 @@
 import express, { Request, Response } from 'express';
-import Food from '../models/food';
+import Auth from '../models/auth';
 
 const router = express.Router()
 
-router.post('/food', async (req: Request, res: Response) => {
-    const { name, amount, unit, calories, protein, carbs, fat } = req.body;
-    const food = new Food({
+
+router.post('/users', async (req: Request, res: Response) => {
+    const users = await Auth.find({});
+    res.json(users);
+})
+
+router.post('/users/:email', async (req: Request, res: Response) => {
+    const user = await Auth.find({ email:  req.params.email});
+    res.json(user);
+})
+
+router.post('/register', async (req: Request, res: Response) => {
+    const { name, email, password } = req.body;
+    const user = new Auth({
         name,
-        amount,
-        unit,
-        calories,
-        protein,
-        carbs,
-        fat
+        email,
+        password
     });
-    const findFood = await Food.find({ name: name });
-    if (findFood[0]) return res.json("Duplicate Item")
-    const savedFood = await food.save();
-    res.json(savedFood);
+    const finduser = await Auth.find({ email });
+    if (finduser[0]) return res.json("Duplicate Item")
+    const saveduser = await user.save();
+    res.json(saveduser);
 })
 
-router.get('/food', async (req: Request, res: Response) => {
-    const foods = await Food.find({});
-    res.json(foods);
-})
-
-router.get('/food/:id', async (req: Request, res: Response) => {
-    const food = await Food.findById(req.params.id);
-    res.json(food);
-})
-
-router.delete('/food/:id', async (req: Request, res: Response) => {
-    const food = await Food.findByIdAndDelete(req.params.id);
-    res.json(food);
-})
-
-router.put('/food/:id', async (req: Request, res: Response) => {
-    const { name, amount, unit, calories, protein, carbs, fat } = req.body;
-    const food = await Food.findByIdAndUpdate(req.params.id, {
-        name,
-        amount,
-        unit,
-        calories,
-        protein,
-        carbs,
-        fat
-    });
-    res.json(food);
-})
-
-router.post('/food/search', async (req: Request, res: Response) => {
-    const { name } = req.body;
-    const food = await Food.find({ name: { $regex: name, $options: 'i' } });
-    res.json(food);
+router.delete('/remove/:email', async (req: Request, res: Response) => {
+    const users = await Auth.findOneAndDelete({ email: req.params.email });
+    res.json(users);
 })
 
 export default router;

@@ -12,7 +12,7 @@ const port = process.env.PORT;
 
 app.use(express.json());
 
-const dbUrl: string = process.env.DATABASE_URL || '';
+const dbUrl: string = 'mongodb://127.0.0.1/logic';
 
 const database = mongoose.connect(dbUrl);
 
@@ -30,4 +30,4 @@ app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
 });
 
-app.use('/api', router);
+app.use('/api/auth', router);
